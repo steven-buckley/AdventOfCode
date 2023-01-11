@@ -162,8 +162,8 @@ no_of_steps_b <- function(df_nodes, df_edges, target){
 # Output ------------------------------------------------------------------
 test_nodes <- create_nodes(test_input)
 test_edges <- create_edges(test_input, test_nodes)
-no_of_steps(test_nodes, test_edges, 31) # 31
-no_of_steps_b(test_nodes, test_edges)
+no_of_steps(test_nodes, test_edges) # 31
+no_of_steps_b(test_nodes, test_edges, 31)
 
 
 nodes <- create_nodes(input_data)
