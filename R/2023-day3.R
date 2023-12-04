@@ -11,6 +11,10 @@ library(readr)
 # if it is a symbol record this and the location reference
 # if it is a number check next cell(s) to get the full number and save this along with the start and end column
 # for all numbers check if it is valid by checking the cells around it for symbols
+#
+# for part 2, gears are identified as the * symbol adjacent to exactly two part numbers
+# the gear ratio for a gear is the product of the two adjacent part numbers
+# already classified the symbols and parts so just need to check for part numbers next to a *
 
 
 # Load input --------------------------------------------------------------
@@ -25,7 +29,7 @@ f_day3_classify_matrix <- function (df){
   #add a new coluumn at start and end
   df$first = "."
   df$flast = "."
-  df <- df %>% 
+  df <- df |> 
     dplyr::select(first,everything())
   
   # add new row at the end
@@ -85,11 +89,14 @@ f_day3_classify_matrix <- function (df){
             
           }
           
+          # reduce the column increment as stepped too far during while loop
+          c <- c-1
+          
           # call function to check if part is valid
-          val_part <- f_day3_checkpart(df, r, pst, c-1)
+          val_part <- f_day3_checkpart(df, r, pst, c)
           
           # store the details of part number
-          df_results <- rbind(df_results, setNames(data.frame('PART',as.numeric(pnum),val_part,NA,r,pst,c-1),names(df_results)))
+          df_results <- rbind(df_results, setNames(data.frame('PART',as.numeric(pnum),val_part,NA,r,pst,c),names(df_results)))
           
         } else {
           
@@ -131,15 +138,56 @@ f_day3_checkpart <- function(df, row_id, start_col, end_col){
   
 }
 
+f_day3_gear_ratio <- function(df_parts, row_id, col_id){
+  
+  # filter the supplied parts list to only include those aligned with the coords
+  # need to consider the length of a number as could be adjacent to any part of it
+  df_parts <- df_parts |> 
+    dplyr::filter(ROW_ID >= (row_id - 1) & ROW_ID <= (row_id + 1)) |> 
+    dplyr::filter((SCOL_ID -1) <= col_id & (ECOL_ID + 1) >= col_id)
+  
+  # check the number of adjacent parts and if exactly 2 get the product of the part numbers
+  if(nrow(df_parts) == 2){
+    gear_ratio <- df_parts[1,"PART_NUM"] * df_parts[2,"PART_NUM"]
+  } else {
+    gear_ratio <- 0
+  }
+  
+  return(gear_ratio)
+    
+}
+
 
 f_day3_part1 <- function(df){
   
-  f_day3_classify_matrix(df) %>%
-    dplyr::filter(VALID_PART == "Y")%>% 
+  f_day3_classify_matrix(df) |>
+    dplyr::filter(VALID_PART == "Y")|> 
     dplyr::summarise(sum(PART_NUM))
+}
+
+f_day3_part2 <- function(df){
+  
+  # summarise the supplied matrix to get parts and gear symbols
+  df_summary <- f_day3_classify_matrix(df)
+  
+  # isolate the part list
+  df_parts <- df_summary |> 
+    dplyr::filter(VALID_PART == 'Y')
+  
+  # isolate the gears and calculate the ratios by supply details to the function
+  df_gears <- df_summary |> 
+    dplyr::filter(SYMBOL == "*") |> 
+    dplyr::rowwise() |> 
+    dplyr::mutate(GEAR_RATIO = f_day3_gear_ratio(df_parts, ROW_ID, SCOL_ID)) |> 
+    dplyr::ungroup() |> 
+    dplyr::summarise(sum(GEAR_RATIO))
+  
+  return(df_gears)
 }
 
 
 # Output ------------------------------------------------------------------
 f_day3_part1(df_test1)
 f_day3_part1(df_input)
+f_day3_part2(df_test1)
+f_day3_part2(df_input)
