@@ -17,6 +17,15 @@ df_test_light_to_temperature = read.table('./data/day-5-test-light-to-temperatur
 df_test_temperature_to_humidity = read.table('./data/day-5-test-temperature-to-humidity.txt',sep='\t', col.names = "INPUT")
 df_test_humidity_to_location = read.table('./data/day-5-test-humidity-to-location.txt',sep='\t', col.names = "INPUT")
 
+df_seeds = read.table('./data/day-5-seeds.txt',sep='\t', col.names = "SEED")
+df_seed_to_soil = read.table('./data/day-5-seed-to-soil.txt',sep='\t', col.names = "INPUT")
+df_soil_to_fertilizer = read.table('./data/day-5-soil-to-fertilizer.txt',sep='\t', col.names = "INPUT")
+df_fertilizer_to_water = read.table('./data/day-5-fertilizer-to-water.txt',sep='\t', col.names = "INPUT")
+df_water_to_light = read.table('./data/day-5-water-to-light.txt',sep='\t', col.names = "INPUT")
+df_light_to_temperature = read.table('./data/day-5-light-to-temperature.txt',sep='\t', col.names = "INPUT")
+df_temperature_to_humidity = read.table('./data/day-5-temperature-to-humidity.txt',sep='\t', col.names = "INPUT")
+df_humidity_to_location = read.table('./data/day-5-humidity-to-location.txt',sep='\t', col.names = "INPUT")
+
 
 # Solution ----------------------------------------------------------------
 f_day5_clean_map <- function(df){
